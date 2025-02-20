@@ -14,17 +14,17 @@ if (!$conn) {
 
 $id = $_POST['id'] ?? '';
 $name = $_POST['name'] ?? '';
-$position = $_POST['position'] ?? ''; // Changed from role to position
-$salary = $_POST['salary'] ?? '';
+$position = $_POST['position'] ?? '';
+$contact = $_POST['contact'] ?? ''; // Changed from salary to contact
 
-if (empty($id) || empty($name) || empty($position) || empty($salary)) {
+if (empty($id) || empty($name) || empty($position) || empty($contact)) {
     $response = ['success' => false, 'message' => 'Missing required fields'];
     header('Content-Type: application/json');
     echo json_encode($response);
     exit;
 }
 
-$query = "UPDATE Staff SET Name = ?, Position = ?, Salary = ? WHERE StaffID = ?"; // Changed Role to Position
+$query = "UPDATE Staff SET Name = ?, Position = ?, Contact = ? WHERE StaffID = ?"; // Changed Salary to Contact
 $stmt = $conn->prepare($query);
 
 if (!$stmt) {
@@ -34,7 +34,7 @@ if (!$stmt) {
     exit;
 }
 
-$stmt->bind_param("sssi", $name, $position, $salary, $id); // Updated parameter name
+$stmt->bind_param("sssi", $name, $position, $contact, $id); // Updated parameter name
 
 $response = [];
 if ($stmt->execute()) {

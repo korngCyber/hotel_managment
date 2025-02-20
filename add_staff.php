@@ -13,17 +13,17 @@ if (!$conn) {
 }
 
 $name = $_POST['name'] ?? '';
-$position = $_POST['position'] ?? ''; // Changed from role to position
-$salary = $_POST['salary'] ?? '';
+$position = $_POST['position'] ?? '';
+$contact = $_POST['contact'] ?? ''; // Changed from salary to contact
 
-if (empty($name) || empty($position) || empty($salary)) {
+if (empty($name) || empty($position) || empty($contact)) {
     $response = ['success' => false, 'message' => 'Missing required fields'];
     header('Content-Type: application/json');
     echo json_encode($response);
     exit;
 }
 
-$query = "INSERT INTO Staff (Name, Position, Salary) VALUES (?, ?, ?)"; // Changed Role to Position
+$query = "INSERT INTO Staff (Name, Position, Contact) VALUES (?, ?, ?)"; // Changed Salary to Contact
 $stmt = $conn->prepare($query);
 
 if (!$stmt) {
@@ -33,7 +33,7 @@ if (!$stmt) {
     exit;
 }
 
-$stmt->bind_param("sss", $name, $position, $salary); // Updated parameter name
+$stmt->bind_param("sss", $name, $position, $contact); // Updated parameter name
 
 $response = [];
 if ($stmt->execute()) {

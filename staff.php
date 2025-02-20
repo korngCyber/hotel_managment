@@ -3,7 +3,7 @@ require_once 'core_config/db.php';
 $conn = db_connect();
 
 // Fetch all staff from the database
-$query = "SELECT * FROM Staff";
+$query = "SELECT StaffID, Name, Position, Contact FROM Staff"; // Select only the required fields
 $result = $conn->query($query);
 
 // Check for database errors
@@ -26,8 +26,7 @@ if (!$result) {
 <body>
     <div class="container mt-4">
         <h1 class="mb-3">Manage Staff</h1>
-        <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addStaffModal">Add New
-            Staff</button>
+        <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addStaffModal">Add New Staff</button>
 
         <table class="table table-striped">
             <thead>
@@ -35,7 +34,7 @@ if (!$result) {
                     <th>ID</th>
                     <th>Name</th>
                     <th>Position</th>
-                    <th>Salary</th>
+                    <th>Contact</th> <!-- Changed from Salary to Contact -->
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -45,12 +44,10 @@ if (!$result) {
                         <td><?= htmlspecialchars($row['StaffID']) ?></td>
                         <td><?= htmlspecialchars($row['Name']) ?></td>
                         <td><?= htmlspecialchars($row['Position']) ?></td>
-                        <td><?= htmlspecialchars($row['Salary']) ?></td>
+                        <td><?= htmlspecialchars($row['Contact']) ?></td> <!-- Changed from Salary to Contact -->
                         <td>
-                            <button class="btn btn-sm btn-outline-primary edit-staff"
-                                data-id="<?= $row['StaffID'] ?>">Edit</button>
-                            <button class="btn btn-sm btn-outline-danger delete-staff"
-                                data-id="<?= $row['StaffID'] ?>">Delete</button>
+                            <button class="btn btn-sm btn-outline-primary edit-staff" data-id="<?= $row['StaffID'] ?>">Edit</button>
+                            <button class="btn btn-sm btn-outline-danger delete-staff" data-id="<?= $row['StaffID'] ?>">Delete</button>
                         </td>
                     </tr>
                 <?php } ?>
@@ -74,12 +71,11 @@ if (!$result) {
                         </div>
                         <div class="mb-3">
                             <label for="addStaffPosition" class="form-label">Position</label>
-                            <!-- Changed ID and label -->
-                            <input type="text" class="form-control" id="addStaffPosition" required> <!-- Changed ID -->
+                            <input type="text" class="form-control" id="addStaffPosition" required>
                         </div>
                         <div class="mb-3">
-                            <label for="addStaffSalary" class="form-label">Salary</label>
-                            <input type="number" class="form-control" id="addStaffSalary" required>
+                            <label for="addStaffContact" class="form-label">Contact</label> <!-- Changed label -->
+                            <input type="text" class="form-control" id="addStaffContact" required> <!-- Changed ID -->
                         </div>
                         <button type="submit" class="btn btn-primary">Add Staff</button>
                     </form>
@@ -108,8 +104,8 @@ if (!$result) {
                             <input type="text" class="form-control" id="editStaffPosition" required> 
                         </div>
                         <div class="mb-3">
-                            <label for="editStaffSalary" class="form-label">Salary</label>
-                            <input type="number" class="form-control" id="editStaffSalary" required>
+                            <label for="editStaffContact" class="form-label">Contact</label> <!-- Changed label -->
+                            <input type="text" class="form-control" id="editStaffContact" required> <!-- Changed ID -->
                         </div>
                         <button type="submit" class="btn btn-primary">Save Changes</button>
                     </form>
@@ -130,15 +126,15 @@ if (!$result) {
             $('#addStaffForm').submit(function (e) {
                 e.preventDefault();
                 var name = $('#addStaffName').val();
-                var position = $('#addStaffPosition').val(); // Changed from role to position
-                var salary = $('#addStaffSalary').val();
+                var position = $('#addStaffPosition').val();
+                var contact = $('#addStaffContact').val(); // Changed from salary to contact
 
-                console.log('Adding staff:', { name, position, salary }); // Updated log
+                console.log('Adding staff:', { name, position, contact }); // Updated log
 
                 $.ajax({
                     url: 'add_staff.php',
                     type: 'POST',
-                    data: { name: name, position: position, salary: salary }, // Changed key from role to position
+                    data: { name: name, position: position, contact: contact }, // Changed key from salary to contact
                     dataType: 'json',
                     success: function (response) {
                         if (response.success) {
@@ -166,8 +162,8 @@ if (!$result) {
                     success: function (data) {
                         $('#editStaffID').val(data.StaffID);
                         $('#editStaffName').val(data.Name);
-                        $('#editStaffPosition').val(data.Position); // Changed from Role to Position
-                        $('#editStaffSalary').val(data.Salary);
+                        $('#editStaffPosition').val(data.Position);
+                        $('#editStaffContact').val(data.Contact); // Changed from Salary to Contact
                         $('#editStaffModal').modal('show');
                     },
                     error: function () {
@@ -181,15 +177,15 @@ if (!$result) {
                 e.preventDefault();
                 var staffID = $('#editStaffID').val();
                 var name = $('#editStaffName').val();
-                var position = $('#editStaffPosition').val(); // Changed from role to position
-                var salary = $('#editStaffSalary').val();
+                var position = $('#editStaffPosition').val();
+                var contact = $('#editStaffContact').val(); // Changed from salary to contact
 
-                console.log('Updating staff:', { id: staffID, name, position, salary }); // Updated log
+                console.log('Updating staff:', { id: staffID, name, position, contact }); // Updated log
 
                 $.ajax({
                     url: 'update_staff.php',
                     type: 'POST',
-                    data: { id: staffID, name: name, position: position, salary: salary }, // Changed key from role to position
+                    data: { id: staffID, name: name, position: position, contact: contact }, // Changed key from salary to contact
                     dataType: 'json',
                     success: function (response) {
                         if (response.success) {
@@ -205,7 +201,6 @@ if (!$result) {
                     }
                 });
             });
-
 
             // Delete Staff
             $('.delete-staff').click(function () {

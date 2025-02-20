@@ -1,5 +1,6 @@
 <?php
 require_once 'core_config/db.php';
+
 $conn = db_connect();
 
 // Fetch all hotels from the database
@@ -222,6 +223,6 @@ if (!$result) {
             localStorage.setItem('scrollPosition', window.scrollY);
         });
     });
-</script>
+    </script>
 </body>
 </html>

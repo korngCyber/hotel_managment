@@ -85,8 +85,43 @@ if (!$result) {
         </div>
     </div>
 
+    <!-- Edit Guest Modal -->
+    <div class="modal fade" id="editGuestModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Guest</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editGuestForm">
+                        <input type="hidden" id="editGuestID">
+                        <div class="mb-3">
+                            <label class="form-label">First Name</label>
+                            <input type="text" class="form-control" id="editFirstName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Last Name</label>
+                            <input type="text" class="form-control" id="editLastName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" id="editEmail" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Phone</label>
+                            <input type="text" class="form-control" id="editPhone" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Update Guest</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         $(document).ready(function () {
+            // Add Guest
             $('#addGuestForm').submit(function (e) {
                 e.preventDefault();
                 $.post('add_guest.php', {
@@ -98,8 +133,57 @@ if (!$result) {
                     alert('Guest added successfully');
                     location.reload();
                 }).fail(function () {
-                    alert('Failed to add guest.');
+                    alert('Failed to add guest. Please try again.');
                 });
+            });
+
+            // Edit Guest
+            $('.edit-guest').click(function () {
+                var guestID = $(this).data('id');
+                $.get('get_guest.php', { id: guestID }, function (data) {
+                    if (data.success !== false) {
+                        $('#editFirstName').val(data.FirstName);
+                        $('#editLastName').val(data.LastName);
+                        $('#editEmail').val(data.Email);
+                        $('#editPhone').val(data.Phone);
+                        $('#editGuestID').val(data.GuestID);
+                        $('#editGuestModal').modal('show');
+                    } else {
+                        alert(data.message);
+                    }
+                });
+            });
+
+            // Update Guest
+            $('#editGuestForm').submit(function (e) {
+                e.preventDefault();
+                $.post('update_guest.php', {
+                    id: $('#editGuestID').val(),
+                    firstName: $('#editFirstName').val(),
+                    lastName: $('#editLastName').val(),
+                    email: $('#editEmail').val(),
+                    phone: $('#editPhone').val()
+                }, function () {
+                    alert('Guest updated successfully');
+                    location.reload();
+                }).fail(function () {
+                    alert('Failed to update guest. Please try again.');
+                });
+            });
+
+            // Delete Guest
+            $('.delete-guest').click(function () {
+                var guestID = $(this).data('id');
+                if (confirm('Are you sure you want to delete this guest? This action cannot be undone.')) {
+                    $.post('delete_guest.php', { id: guestID }, function (data) {
+                        if (data.success) {
+                            alert('Guest deleted successfully');
+                            location.reload();
+                        } else {
+                            alert('Failed to delete guest: ' + data.message);
+                        }
+                    });
+                }
             });
         });
     </script>

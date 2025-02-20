@@ -21,7 +21,7 @@ if (empty($id)) {
     exit;
 }
 
-$query = "SELECT * FROM Staff WHERE StaffID = ?";
+$query = "SELECT StaffID, Name, Position, Contact FROM Staff WHERE StaffID = ?";
 $stmt = $conn->prepare($query);
 $stmt->bind_param("i", $id);
 $stmt->execute();
@@ -34,8 +34,8 @@ if ($result->num_rows > 0) {
     $response = [
         'StaffID' => $row['StaffID'],
         'Name' => $row['Name'],
-        'Position' => $row['Position'], // Changed from Role to Position
-        'Salary' => $row['Salary']
+        'Position' => $row['Position'],
+        'Contact' => $row['Contact'] // Changed from Salary to Contact
     ];
 } else {
     $response['success'] = false;
