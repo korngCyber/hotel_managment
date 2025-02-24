@@ -48,167 +48,167 @@ while ($guest = $guestsResult->fetch_assoc()) {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <style>
-    :root {
-        --primary-color: #4a90e2;
-        --secondary-color: #f5f7fa;
-        --accent-color: #ff6b6b;
-        --text-color: #333;
-        --border-radius: 8px;
-    }
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #f5f7fa;
+            --accent-color: #ff6b6b;
+            --text-color: #333;
+            --border-radius: 8px;
+        }
 
-    body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background-color: var(--secondary-color);
-        color: var(--text-color);
-    }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+        }
 
-    .container {
-        background-color: #ffffff;
-        border-radius: var(--border-radius);
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        padding: 2rem;
-        margin-top: 2rem;
-    }
+        .container {
+            background-color: #ffffff;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-top: 2rem;
+        }
 
-    h1 {
-        color: var(--primary-color);
-        font-weight: 600;
-        margin-bottom: 1.5rem;
-    }
+        h1 {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
 
-    .btn-primary {
-        background-color: var(--primary-color);
-        border-color: var(--primary-color);
-        transition: all 0.3s ease;
-    }
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            transition: all 0.3s ease;
+        }
 
-    .btn-primary:hover {
-        background-color: darken(var(--primary-color), 10%);
-        border-color: darken(var(--primary-color), 10%);
-    }
+        .btn-primary:hover {
+            background-color: darken(var(--primary-color), 10%);
+            border-color: darken(var(--primary-color), 10%);
+        }
 
-    .table {
-        border-radius: var(--border-radius);
-        overflow: hidden;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    }
+        .table {
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
 
-    .table thead th {
-        background-color: var(--primary-color);
-        color: #ffffff;
-        border: none;
-    }
+        .table thead th {
+            background-color: var(--primary-color);
+            color: #ffffff;
+            border: none;
+        }
 
-    .table-striped tbody tr:nth-of-type(odd) {
-        background-color: rgba(0, 0, 0, 0.02);
-    }
+        .table-striped tbody tr:nth-of-type(odd) {
+            background-color: rgba(0, 0, 0, 0.02);
+        }
 
-    .btn-sm {
-        border-radius: 20px;
-        padding: 0.25rem 0.75rem;
-    }
+        .btn-sm {
+            border-radius: 20px;
+            padding: 0.25rem 0.75rem;
+        }
 
-    .btn-outline-primary {
-        color: var(--primary-color);
-        border-color: var(--primary-color);
-    }
+        .btn-outline-primary {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
 
-    .modal-content {
-        border-radius: 15px;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    }
+        .modal-content {
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
 
-    .modal-header {
-        background: linear-gradient(135deg, #6e8efb, #a777e3);
-        border-radius: 15px 15px 0 0;
-        padding: 20px;
-    }
+        .modal-header {
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            border-radius: 15px 15px 0 0;
+            padding: 20px;
+        }
 
-    .modal-title {
-        font-weight: 600;
-        letter-spacing: 1px;
-        color: #ffffff;
-    }
+        .modal-title {
+            font-weight: 600;
+            letter-spacing: 1px;
+            color: #ffffff;
+        }
 
-    .modal-body {
-        padding: 30px;
-    }
+        .modal-body {
+            padding: 30px;
+        }
 
-    .form-label {
-        font-weight: 500;
-        margin-bottom: 8px;
-    }
+        .form-label {
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
 
-    .form-control {
-        border-radius: 8px;
-        padding: 12px;
-        transition: all 0.3s ease;
-    }
+        .form-control {
+            border-radius: 8px;
+            padding: 12px;
+            transition: all 0.3s ease;
+        }
 
-    .form-control:focus {
-        box-shadow: 0 0 0 3px rgba(110, 142, 251, 0.1);
-    }
+        .form-control:focus {
+            box-shadow: 0 0 0 3px rgba(110, 142, 251, 0.1);
+        }
 
-    .btn-primary {
-        background: linear-gradient(135deg, #6e8efb, #a777e3);
-        border: none;
-        border-radius: 8px;
-        padding: 12px;
-        font-weight: 600;
-        letter-spacing: 1px;
-        transition: all 0.3s ease;
-    }
+        .btn-primary {
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
 
-    .btn-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(110, 142, 251, 0.4);
-    }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(110, 142, 251, 0.4);
+        }
 
-    .booking-preview {
-        margin-top: 8px;
-        padding: 8px;
-        background-color: #f8f9fa;
-        border-radius: 4px;
-        font-size: 0.9em;
-    }
+        .booking-preview {
+            margin-top: 8px;
+            padding: 8px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
 
-    .select2-container {
-        width: 100% !important;
-    }
+        .select2-container {
+            width: 100% !important;
+        }
 
-    /* Additional Select2 Styling */
-    .select2-container--default .select2-selection--single {
-        height: 45px;
-        padding: 8px;
-        border: 1px solid #ced4da;
-        border-radius: 8px;
-    }
+        /* Additional Select2 Styling */
+        .select2-container--default .select2-selection--single {
+            height: 45px;
+            padding: 8px;
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+        }
 
-    .select2-container--default .select2-selection--single .select2-selection__arrow {
-        height: 43px;
-    }
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 43px;
+        }
 
-    .select2-container--default .select2-selection--single .select2-selection__rendered {
-        line-height: 28px;
-    }
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 28px;
+        }
 
-    .select2-dropdown {
-        border: 1px solid #ced4da;
-        border-radius: 8px;
-    }
+        .select2-dropdown {
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+        }
 
-    .select2-search--dropdown .select2-search__field {
-        padding: 8px;
-        border-radius: 4px;
-    }
+        .select2-search--dropdown .select2-search__field {
+            padding: 8px;
+            border-radius: 4px;
+        }
 
-    .select2-results__option {
-        padding: 8px;
-    }
+        .select2-results__option {
+            padding: 8px;
+        }
 
-    .guest-search-box {
-        margin-bottom: 10px;
-    }
+        .guest-search-box {
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 
@@ -233,27 +233,27 @@ while ($guest = $guestsResult->fetch_assoc()) {
             </thead>
             <tbody>
                 <?php while ($row = $result->fetch_assoc()) { ?>
-                <tr>
-                    <td><?= htmlspecialchars($row['bId']) ?></td>
-                    <td>
-                        <?= htmlspecialchars($row['htName']) ?> -
-                        <?= htmlspecialchars($row['rType']) ?>
-                        (ID: <?= htmlspecialchars($row['rId']) ?>)
-                    </td>
-                    <td><?= htmlspecialchars($row['gName']) ?></td>
-                    <td><?= htmlspecialchars($row['bCheckIn']) ?></td>
-                    <td><?= htmlspecialchars($row['bCheckout']) ?></td>
-                    <td>$<?= htmlspecialchars(number_format($row['bPrice'], 2)) ?></td>
-                    <td><span
-                            class="badge bg-<?= $row['rStatus'] == 'available' ? 'success' : 'warning' ?>"><?= htmlspecialchars($row['rStatus']) ?></span>
-                    </td>
-                    <td>
-                        <button class="btn btn-sm btn-outline-primary edit-booking"
-                            data-id="<?= $row['bId'] ?>">Edit</button>
-                        <button class="btn btn-sm btn-outline-danger delete-booking"
-                            data-id="<?= $row['bId'] ?>">Delete</button>
-                    </td>
-                </tr>
+                    <tr>
+                        <td><?= htmlspecialchars($row['bId']) ?></td>
+                        <td>
+                            <?= htmlspecialchars($row['htName']) ?> -
+                            <?= htmlspecialchars($row['rType']) ?>
+                            (ID: <?= htmlspecialchars($row['rId']) ?>)
+                        </td>
+                        <td><?= htmlspecialchars($row['gName']) ?></td>
+                        <td><?= htmlspecialchars($row['bCheckIn']) ?></td>
+                        <td><?= htmlspecialchars($row['bCheckout']) ?></td>
+                        <td>$<?= htmlspecialchars(number_format($row['bPrice'], 2)) ?></td>
+                        <td><span
+                                class="badge bg-<?= $row['rStatus'] == 'available' ? 'success' : 'warning' ?>"><?= htmlspecialchars($row['rStatus']) ?></span>
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary edit-booking"
+                                data-id="<?= $row['bId'] ?>">Edit</button>
+                            <button class="btn btn-sm btn-outline-danger delete-booking"
+                                data-id="<?= $row['bId'] ?>">Delete</button>
+                        </td>
+                    </tr>
                 <?php } ?>
             </tbody>
         </table>
@@ -279,13 +279,13 @@ while ($guest = $guestsResult->fetch_assoc()) {
                             <select class="form-control" id="roomId" name="rId" required>
                                 <option value="">Select a room...</option>
                                 <?php foreach ($availableRooms as $room) { ?>
-                                <option value="<?= htmlspecialchars($room['rId']) ?>"
-                                    data-price="<?= htmlspecialchars($room['rPrice']) ?>">
-                                    <?= htmlspecialchars($room['htName']) ?> -
-                                    <?= htmlspecialchars($room['rName']) ?> -
-                                    <?= htmlspecialchars($room['rType']) ?>
-                                    ($<?= htmlspecialchars(number_format($room['rPrice'], 2)) ?>)
-                                </option>
+                                    <option value="<?= htmlspecialchars($room['rId']) ?>"
+                                        data-price="<?= htmlspecialchars($room['rPrice']) ?>">
+                                        <?= htmlspecialchars($room['htName']) ?> -
+                                        <?= htmlspecialchars($room['rName']) ?> -
+                                        <?= htmlspecialchars($room['rType']) ?>
+                                        ($<?= htmlspecialchars(number_format($room['rPrice'], 2)) ?>)
+                                    </option>
                                 <?php } ?>
                             </select>
                         </div>
@@ -296,9 +296,9 @@ while ($guest = $guestsResult->fetch_assoc()) {
                             <select class="form-control select2" id="guestId" name="gId" required>
                                 <option value="">Search for a guest...</option>
                                 <?php foreach ($guests as $guest) { ?>
-                                <option value="<?= htmlspecialchars($guest['gId']) ?>">
-                                    <?= htmlspecialchars($guest['gName']) ?>
-                                </option>
+                                    <option value="<?= htmlspecialchars($guest['gId']) ?>">
+                                        <?= htmlspecialchars($guest['gName']) ?>
+                                    </option>
                                 <?php } ?>
                             </select>
                         </div>
@@ -352,13 +352,13 @@ while ($guest = $guestsResult->fetch_assoc()) {
                             <select class="form-control" id="editRoomId" name="rId" required>
                                 <option value="">Select a room...</option>
                                 <?php foreach ($availableRooms as $room) { ?>
-                                <option value="<?= htmlspecialchars($room['rId']) ?>"
-                                    data-price="<?= htmlspecialchars($room['rPrice']) ?>">
-                                    <?= htmlspecialchars($room['htName']) ?> -
-                                    <?= htmlspecialchars($room['rName']) ?> -
-                                    <?= htmlspecialchars($room['rType']) ?>
-                                    ($<?= htmlspecialchars(number_format($room['rPrice'], 2)) ?>)
-                                </option>
+                                    <option value="<?= htmlspecialchars($room['rId']) ?>"
+                                        data-price="<?= htmlspecialchars($room['rPrice']) ?>">
+                                        <?= htmlspecialchars($room['htName']) ?> -
+                                        <?= htmlspecialchars($room['rName']) ?> -
+                                        <?= htmlspecialchars($room['rType']) ?>
+                                        ($<?= htmlspecialchars(number_format($room['rPrice'], 2)) ?>)
+                                    </option>
                                 <?php } ?>
                             </select>
                         </div>
@@ -369,9 +369,9 @@ while ($guest = $guestsResult->fetch_assoc()) {
                             <select class="form-control select2" id="editGuestId" name="gId" required>
                                 <option value="">Search for a guest...</option>
                                 <?php foreach ($guests as $guest) { ?>
-                                <option value="<?= htmlspecialchars($guest['gId']) ?>">
-                                    <?= htmlspecialchars($guest['gName']) ?>
-                                </option>
+                                    <option value="<?= htmlspecialchars($guest['gId']) ?>">
+                                        <?= htmlspecialchars($guest['gName']) ?>
+                                    </option>
                                 <?php } ?>
                             </select>
                         </div>
@@ -406,167 +406,167 @@ while ($guest = $guestsResult->fetch_assoc()) {
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-    $(document).ready(function() {
-        // Initialize Select2 for guest selection
-        $('.select2').select2({
-            placeholder: 'Search for a guest...',
-            allowClear: true,
-            width: '100%',
-            dropdownParent: $('#addBookingModal')
-        });
+        $(document).ready(function() {
+            // Initialize Select2 for guest selection
+            $('.select2').select2({
+                placeholder: 'Search for a guest...',
+                allowClear: true,
+                width: '100%',
+                dropdownParent: $('#addBookingModal')
+            });
 
-        $('#editGuestId').select2({
-            placeholder: 'Search for a guest...',
-            allowClear: true,
-            width: '100%',
-            dropdownParent: $('#editBookingModal')
-        });
+            $('#editGuestId').select2({
+                placeholder: 'Search for a guest...',
+                allowClear: true,
+                width: '100%',
+                dropdownParent: $('#editBookingModal')
+            });
 
-        // Set price when room is selected (for both add and edit forms)
-        $('#roomId, #editRoomId').change(function() {
-            var selectedOption = $(this).find('option:selected');
-            var price = selectedOption.data('price');
-            var priceInput = $(this).closest('form').find('[name="bPrice"]');
-            priceInput.val(price || '');
-        });
+            // Set price when room is selected (for both add and edit forms)
+            $('#roomId, #editRoomId').change(function() {
+                var selectedOption = $(this).find('option:selected');
+                var price = selectedOption.data('price');
+                var priceInput = $(this).closest('form').find('[name="bPrice"]');
+                priceInput.val(price || '');
+            });
 
-        // Add Booking
-        $('#addBookingForm').submit(function(e) {
-            e.preventDefault();
-            var formData = new FormData(this);
+            // Add Booking
+            $('#addBookingForm').submit(function(e) {
+                e.preventDefault();
+                var formData = new FormData(this);
 
-            $.ajax({
-                url: 'add_booking.php',
-                type: 'POST',
-                data: Object.fromEntries(formData),
-                success: function(response) {
-                    try {
-                        var res = typeof response === 'string' ? JSON.parse(response) :
-                            response;
-                        if (res.success) {
-                            alert('Booking added successfully');
+                $.ajax({
+                    url: 'add_booking.php',
+                    type: 'POST',
+                    data: Object.fromEntries(formData),
+                    success: function(response) {
+                        try {
+                            var res = typeof response === 'string' ? JSON.parse(response) :
+                                response;
+                            if (res.success) {
+                                alert('Booking added successfully');
+                                location.reload();
+                            } else {
+                                alert('Failed to add booking: ' + res.message);
+                            }
+                        } catch (e) {
+                            console.error('Error parsing response:', e);
+                            alert('Unexpected error. Check server response.');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('AJAX error:', xhr.responseText);
+                        alert('Failed to add booking. Check the server logs.');
+                    }
+                });
+            });
+
+            // Edit Booking (fetch)
+            $('.edit-booking').click(function() {
+                var bookingId = $(this).data('id');
+                console.log('Editing booking ID:', bookingId); // Debug
+
+                $.ajax({
+                    url: 'get_booking.php',
+                    type: 'GET',
+                    data: {
+                        id: bookingId
+                    },
+                    dataType: 'json',
+                    success: function(data) {
+                        console.log('Received data:', data); // Debug
+                        console.log('Available room options:', $('#editRoomId option')
+                            .length); // Debug
+
+                        if (data.success !== false) {
+                            $('#editBookingId').val(data.bId);
+
+                            // Debug room selection
+                            console.log('Setting room ID:', data.rId);
+                            console.log('Available options:', $('#editRoomId option').map(
+                                function() {
+                                    return {
+                                        value: this.value,
+                                        text: this.text
+                                    };
+                                }).get());
+
+                            $('#editRoomId').val(data.rId).trigger('change');
+                            $('#editGuestId').val(data.gId).trigger('change');
+                            $('#editCheckIn').val(data.bCheckIn);
+                            $('#editCheckOut').val(data.bCheckout);
+                            $('#editPrice').val(data.bPrice);
+                            $('#editBookingModal').modal('show');
+                        } else {
+                            alert(data.message || 'Failed to fetch booking data');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('AJAX error:', xhr.responseText);
+                        alert('Failed to fetch booking data. Please try again.');
+                    }
+                });
+            });
+
+            // Update Booking
+            $('#editBookingForm').submit(function(e) {
+                e.preventDefault();
+                var formData = new FormData(this);
+
+                $.ajax({
+                    url: 'update_booking.php',
+                    type: 'POST',
+                    data: Object.fromEntries(formData),
+                    success: function(response) {
+                        try {
+                            var res = typeof response === 'string' ? JSON.parse(response) :
+                                response;
+                            if (res.success) {
+                                alert('Booking updated successfully');
+                                location.reload();
+                            } else {
+                                alert('Failed to update booking: ' + res.message);
+                            }
+                        } catch (e) {
+                            console.error('Error parsing response:', e);
+                            alert('Unexpected error. Check server response.');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('AJAX error:', xhr.responseText);
+                        alert('Failed to update booking. Check the server logs.');
+                    }
+                });
+            });
+
+            // Delete Booking
+            $('.delete-booking').click(function() {
+                if (!confirm('Are you sure you want to delete this booking?')) return;
+
+                var bookingId = $(this).data('id');
+
+                $.ajax({
+                    url: 'delete_booking.php',
+                    type: 'POST',
+                    data: {
+                        id: bookingId
+                    },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.success) {
+                            alert('Booking deleted successfully');
                             location.reload();
                         } else {
-                            alert('Failed to add booking: ' + res.message);
+                            alert('Failed to delete booking: ' + response.message);
                         }
-                    } catch (e) {
-                        console.error('Error parsing response:', e);
-                        alert('Unexpected error. Check server response.');
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('AJAX error:', xhr.responseText);
+                        alert('Failed to delete booking. Check the server logs.');
                     }
-                },
-                error: function(xhr, status, error) {
-                    console.error('AJAX error:', xhr.responseText);
-                    alert('Failed to add booking. Check the server logs.');
-                }
+                });
             });
         });
-
-        // Edit Booking (fetch)
-        $('.edit-booking').click(function() {
-            var bookingId = $(this).data('id');
-            console.log('Editing booking ID:', bookingId); // Debug
-
-            $.ajax({
-                url: 'get_booking.php',
-                type: 'GET',
-                data: {
-                    id: bookingId
-                },
-                dataType: 'json',
-                success: function(data) {
-                    console.log('Received data:', data); // Debug
-                    console.log('Available room options:', $('#editRoomId option')
-                        .length); // Debug
-
-                    if (data.success !== false) {
-                        $('#editBookingId').val(data.bId);
-
-                        // Debug room selection
-                        console.log('Setting room ID:', data.rId);
-                        console.log('Available options:', $('#editRoomId option').map(
-                            function() {
-                                return {
-                                    value: this.value,
-                                    text: this.text
-                                };
-                            }).get());
-
-                        $('#editRoomId').val(data.rId).trigger('change');
-                        $('#editGuestId').val(data.gId).trigger('change');
-                        $('#editCheckIn').val(data.bCheckIn);
-                        $('#editCheckOut').val(data.bCheckout);
-                        $('#editPrice').val(data.bPrice);
-                        $('#editBookingModal').modal('show');
-                    } else {
-                        alert(data.message || 'Failed to fetch booking data');
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error('AJAX error:', xhr.responseText);
-                    alert('Failed to fetch booking data. Please try again.');
-                }
-            });
-        });
-
-        // Update Booking
-        $('#editBookingForm').submit(function(e) {
-            e.preventDefault();
-            var formData = new FormData(this);
-
-            $.ajax({
-                url: 'update_booking.php',
-                type: 'POST',
-                data: Object.fromEntries(formData),
-                success: function(response) {
-                    try {
-                        var res = typeof response === 'string' ? JSON.parse(response) :
-                            response;
-                        if (res.success) {
-                            alert('Booking updated successfully');
-                            location.reload();
-                        } else {
-                            alert('Failed to update booking: ' + res.message);
-                        }
-                    } catch (e) {
-                        console.error('Error parsing response:', e);
-                        alert('Unexpected error. Check server response.');
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error('AJAX error:', xhr.responseText);
-                    alert('Failed to update booking. Check the server logs.');
-                }
-            });
-        });
-
-        // Delete Booking
-        $('.delete-booking').click(function() {
-            if (!confirm('Are you sure you want to delete this booking?')) return;
-
-            var bookingId = $(this).data('id');
-
-            $.ajax({
-                url: 'delete_booking.php',
-                type: 'POST',
-                data: {
-                    id: bookingId
-                },
-                dataType: 'json',
-                success: function(response) {
-                    if (response.success) {
-                        alert('Booking deleted successfully');
-                        location.reload();
-                    } else {
-                        alert('Failed to delete booking: ' + response.message);
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error('AJAX error:', xhr.responseText);
-                    alert('Failed to delete booking. Check the server logs.');
-                }
-            });
-        });
-    });
     </script>
 </body>
 

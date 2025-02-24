@@ -13,7 +13,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $username = trim($_POST['username']);
 
         $conn = db_connect();
-        $stmt = $conn->prepare("SELECT * FROM users WHERE username = ?");
+        
+        // First check tbStaff table
+        $stmt = $conn->prepare("SELECT * FROM tbStaffs WHERE sName = ?");
         $stmt->bind_param("s", $username);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -24,10 +26,35 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             session_regenerate_id(true);
             $_SESSION['username'] = $username;
             $_SESSION['user_id'] = $user['id'];
+            $_SESSION['user_type'] = 'staff';
 
             echo '<script>
                     setTimeout(function() {
-                        window.location.href = "dashboard.php";
+                        window.location.href = "index.php";
+                    }, 1500);
+                  </script>';
+            exit();
+        }
+        
+        $stmt->close();
+
+        // If not found in tbStaff, check tbGuests table
+        $stmt = $conn->prepare("SELECT * FROM tbGuests WHERE gName = ?");
+        $stmt->bind_param("s", $username);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result->num_rows === 1) {
+            $user = $result->fetch_assoc();
+            $_SESSION['login_attempts'] = 0;
+            session_regenerate_id(true);
+            $_SESSION['username'] = $username;
+            $_SESSION['user_id'] = $user['gId'];
+            $_SESSION['user_type'] = 'guest';
+
+            echo '<script>
+                    setTimeout(function() {
+                        window.location.href = "guest_booking.php";
                     }, 1500);
                   </script>';
             exit();
