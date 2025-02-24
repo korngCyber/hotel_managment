@@ -3,48 +3,34 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 require_once 'core_config/db.php';
-$conn = db_connect();
-
-if (!$conn) {
-    $response = ['success' => false, 'message' => 'Database connection failed'];
-    header('Content-Type: application/json');
-    echo json_encode($response);
-    exit;
-}
-
-$id = $_GET['id'] ?? '';
-
-if (empty($id)) {
-    $response = ['success' => false, 'message' => 'Missing ID'];
-    header('Content-Type: application/json');
-    echo json_encode($response);
-    exit;
-}
-
-$query = "SELECT StaffID, Name, Position, Contact FROM Staff WHERE StaffID = ?";
-$stmt = $conn->prepare($query);
-$stmt->bind_param("i", $id);
-$stmt->execute();
-$result = $stmt->get_result();
-
-$response = [];
-
-if ($result->num_rows > 0) {
-    $row = $result->fetch_assoc();
-    $response = [
-        'StaffID' => $row['StaffID'],
-        'Name' => $row['Name'],
-        'Position' => $row['Position'],
-        'Contact' => $row['Contact'] // Changed from Salary to Contact
-    ];
-} else {
-    $response['success'] = false;
-    $response['message'] = 'Staff not found';
-}
-
-$stmt->close();
-$conn->close();
 
 header('Content-Type: application/json');
+
+$conn = db_connect();
+if (!$conn) {
+    echo json_encode(['success' => false, 'message' => 'Database connection failed: ' . mysqli_connect_error()]);
+    exit;
+}
+
+if (isset($_GET['id'])) {
+    $id = $_GET['id'];
+
+    $query = "SELECT sId, sName, sPos, sCon, sAddr, sImage, sWork FROM tbStaffs WHERE sId = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        $response = $result->fetch_assoc();
+    } else {
+        $response = ['success' => false, 'message' => 'Staff not found'];
+    }
+
+    $stmt->close();
+} else {
+    $response = ['success' => false, 'message' => 'Missing ID parameter'];
+}
+
+$conn->close();
 echo json_encode($response);
-?>
