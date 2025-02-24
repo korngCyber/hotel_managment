@@ -5,7 +5,7 @@ if (isset($_GET['id'])) {
     $conn = db_connect();
     $id = $_GET['id'];
 
-    $stmt = $conn->prepare("SELECT * FROM Guests WHERE GuestID = ?");
+    $stmt = $conn->prepare("SELECT gId, gName, gMail, gPhone, gDob, gImage FROM tbGuests WHERE gId = ?");
     $stmt->bind_param("i", $id);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -24,4 +24,4 @@ if (isset($_GET['id'])) {
     header('Content-Type: application/json');
     echo json_encode($response);
 }
-?> 
+?>

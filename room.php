@@ -10,6 +10,18 @@ $result = $conn->query($query);
 if (!$result) {
     die("Database query failed: " . $conn->error);
 }
+
+// Separate rooms into available and booked
+$availableRooms = [];
+$bookedRooms = [];
+
+while ($row = $result->fetch_assoc()) {
+    if ($row['Status'] == 'available') {
+        $availableRooms[] = $row;
+    } else {
+        $bookedRooms[] = $row;
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -20,12 +32,36 @@ if (!$result) {
     <title>Manage Rooms</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        h1, h2 {
+            color: #343a40;
+        }
+        .table {
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+        .table th {
+            background-color: #007bff;
+            color: white;
+        }
+        .badge {
+            font-size: 0.9rem;
+        }
+        .modal-header {
+            background-color: #007bff;
+            color: white;
+        }
+    </style>
 </head>
 <body>
     <div class="container mt-4">
         <h1 class="mb-3">Manage Rooms</h1>
         <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addRoomModal">Add New Room</button>
 
+        <h2>Available Rooms</h2>
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -38,14 +74,47 @@ if (!$result) {
                 </tr>
             </thead>
             <tbody>
-                <?php while ($row = $result->fetch_assoc()) { ?>
+                <?php foreach ($availableRooms as $row) { ?>
                     <tr>
                         <td><?= htmlspecialchars($row['RoomID']) ?></td>
                         <td><?= htmlspecialchars($row['HotelID']) ?></td>
                         <td><?= htmlspecialchars($row['RoomType']) ?></td>
                         <td><?= htmlspecialchars($row['Price']) ?></td>
                         <td>
-                            <span class="badge bg-<?= $row['Status'] == 'available' ? 'success' : 'danger' ?>">
+                            <span class="badge bg-success">
+                                <?= htmlspecialchars(ucfirst($row['Status'])) ?>
+                            </span>
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary edit-room" data-id="<?= $row['RoomID'] ?>">Edit</button>
+                            <button class="btn btn-sm btn-outline-danger delete-room" data-id="<?= $row['RoomID'] ?>">Delete</button>
+                        </td>
+                    </tr>
+                <?php } ?>
+            </tbody>
+        </table>
+
+        <h2>Booked Rooms</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Hotel ID</th>
+                    <th>Room Type</th>
+                    <th>Price ($)</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($bookedRooms as $row) { ?>
+                    <tr>
+                        <td><?= htmlspecialchars($row['RoomID']) ?></td>
+                        <td><?= htmlspecialchars($row['HotelID']) ?></td>
+                        <td><?= htmlspecialchars($row['RoomType']) ?></td>
+                        <td><?= htmlspecialchars($row['Price']) ?></td>
+                        <td>
+                            <span class="badge bg-danger">
                                 <?= htmlspecialchars(ucfirst($row['Status'])) ?>
                             </span>
                         </td>

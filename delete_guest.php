@@ -1,26 +1,33 @@
 <?php
 require_once 'core_config/db.php';
+$conn = db_connect();
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $conn = db_connect();
-    
-    $id = $_POST['id'];
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $guestID = $_POST['id'];
 
-    $stmt = $conn->prepare("DELETE FROM Guests WHERE GuestID = ?");
-    $stmt->bind_param("i", $id);
-
-    $response = [];
-    if ($stmt->execute()) {
-        $response['success'] = true;
-    } else {
-        $response['success'] = false;
-        $response['message'] = $stmt->error;
-    }
-
+    // Fetch the image path
+    $query = "SELECT gImage FROM tbGuests WHERE gId = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("i", $guestID);
+    $stmt->execute();
+    $stmt->bind_result($imageURL);
+    $stmt->fetch();
     $stmt->close();
-    $conn->close();
 
-    header('Content-Type: application/json');
-    echo json_encode($response);
+    // Delete the record
+    $query = "DELETE FROM tbGuests WHERE gId = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("i", $guestID);
+
+    if ($stmt->execute()) {
+        if (!empty($imageURL) && file_exists($imageURL)) {
+            unlink($imageURL); // Delete image file
+        }
+        echo json_encode(["success" => true]);
+    } else {
+        echo json_encode(["success" => false, "message" => "Error: " . $stmt->error]);
+    }
+    $stmt->close();
 }
-?> 
+$conn->close();
+?>
