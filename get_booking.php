@@ -16,10 +16,13 @@ if (isset($_GET['id'])) {
     $bookingId = $_GET['id'];
 
     // Join with rooms and guests tables to get more details
-    $query = "SELECT b.*, r.rNumber, g.gName 
+    $query = "SELECT b.bId, b.rId, b.gId, b.bCheckIn, b.bCheckout, b.bPrice,
+                     r.rName, r.rType, r.rStatus,
+                     g.gName, h.htName
               FROM tbBookings b 
               LEFT JOIN tbRooms r ON b.rId = r.rId 
               LEFT JOIN tbGuests g ON b.gId = g.gId 
+              LEFT JOIN tbHotels h ON r.htId = h.htId
               WHERE b.bId = ?";
 
     $stmt = $conn->prepare($query);
@@ -50,3 +53,4 @@ $conn->close();
 
 header('Content-Type: application/json');
 echo json_encode($response);
+?>
