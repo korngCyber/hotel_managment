@@ -14,31 +14,30 @@ if (!$conn) {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $rId = $_POST['rId'] ?? 0;
-    $rName = $_POST['rName'] ?? '';
-    $rType = $_POST['rType'] ?? '';
-    $rPrice = $_POST['rPrice'] ?? 0;
-    $rStatus = $_POST['rStatus'] ?? '';
-    $htId = $_POST['htId'] ?? 0;
+    $gId = $_POST['gId'] ?? 0; 
+    $bCheckIn = $_POST['bCheckIn'] ?? '';
+    $bCheckout = $_POST['bCheckout'] ?? '';
+    $bPrice = $_POST['bPrice'] ?? 0;
 
-    if (empty($rType) || empty($rStatus) || empty($rId) || empty($htId) || empty($rName)) {
+    if (empty($rId) || empty($gId) || empty($bCheckIn) || empty($bCheckout) || empty($bPrice)) {
         $response = ['success' => false, 'message' => 'Missing required fields'];
         header('Content-Type: application/json');
         echo json_encode($response);
         exit;
     }
 
-    // Validate enum values
-    $validTypes = ['Single', 'Double', 'Suite'];
-    $validStatuses = ['available', 'booked'];
-
-    if (!in_array($rType, $validTypes) || !in_array($rStatus, $validStatuses)) {
-        $response = ['success' => false, 'message' => 'Invalid room type or status'];
+    // Validate dates
+    $checkIn = new DateTime($bCheckIn);
+    $checkout = new DateTime($bCheckout);
+    
+    if ($checkout <= $checkIn) {
+        $response = ['success' => false, 'message' => 'Check-out date must be after check-in date'];
         header('Content-Type: application/json');
         echo json_encode($response);
         exit;
     }
 
-    $stmt = $conn->prepare("UPDATE tbRooms SET htId = ?, rName = ?, rType = ?, rPrice = ?, rStatus = ? WHERE rId = ?");
+    $stmt = $conn->prepare("INSERT INTO tbBookings (rId, gId, bCheckIn, bCheckout, bPrice) VALUES (?, ?, ?, ?, ?)");
     if (!$stmt) {
         $response = ['success' => false, 'message' => 'Prepare failed: ' . $conn->error];
         header('Content-Type: application/json');
@@ -46,15 +45,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    $stmt->bind_param("issdsi", $htId, $rName, $rType, $rPrice, $rStatus, $rId);
+    $stmt->bind_param("iissd", $rId, $gId, $bCheckIn, $bCheckout, $bPrice);
 
     $response = [];
     if ($stmt->execute()) {
+        // Update room status to booked
+        $updateStmt = $conn->prepare("UPDATE tbRooms SET rStatus = 'booked' WHERE rId = ?");
+        $updateStmt->bind_param("i", $rId);
+        $updateStmt->execute();
+        $updateStmt->close();
+        
         $response['success'] = true;
-        $response['message'] = "Room updated successfully.";
+        $response['message'] = "Booking added successfully.";
     } else {
         $response['success'] = false;
-        $response['message'] = "Error updating room: " . $stmt->error;
+        $response['message'] = "Error adding booking: " . $stmt->error;
     }
 
     $stmt->close();

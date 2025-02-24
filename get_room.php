@@ -15,7 +15,7 @@ if (!$conn) {
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
 
-    $query = "SELECT rId, htId, rType, rPrice, rStatus FROM tbRooms WHERE rId = ?";
+    $query = "SELECT rId, htId, rName, rType, rPrice, rStatus FROM tbRooms WHERE rId = ?";
     $stmt = $conn->prepare($query);
     $stmt->bind_param("i", $id);
     $stmt->execute();

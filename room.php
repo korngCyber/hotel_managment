@@ -15,7 +15,7 @@ while ($hotel = $hotelResult->fetch_assoc()) {
 }
 
 // Fetch all rooms from the database
-$query = "SELECT r.rId, r.htId, h.htName, r.rType, r.rPrice, r.rStatus 
+$query = "SELECT r.rId, r.htId, h.htName, r.rName, r.rType, r.rPrice, r.rStatus 
           FROM tbRooms r 
           LEFT JOIN tbHotels h ON r.htId = h.htId";
 $result = $conn->query($query);
@@ -207,6 +207,7 @@ while ($row = $result->fetch_assoc()) {
                     <tr>
                         <th>Room ID</th>
                         <th>Hotel Name</th>
+                        <th>Room Name</th>
                         <th>Room Type</th>
                         <th>Price ($)</th>
                         <th>Status</th>
@@ -218,6 +219,7 @@ while ($row = $result->fetch_assoc()) {
                     <tr>
                         <td><?= htmlspecialchars($row['rId']) ?></td>
                         <td><?= htmlspecialchars($row['htName']) ?></td>
+                        <td><?= htmlspecialchars($row['rName']) ?></td>
                         <td><?= htmlspecialchars($row['rType']) ?></td>
                         <td><?= htmlspecialchars($row['rPrice']) ?></td>
                         <td><span class="badge bg-success"><?= htmlspecialchars(ucfirst($row['rStatus'])) ?></span></td>
@@ -240,6 +242,7 @@ while ($row = $result->fetch_assoc()) {
                     <tr>
                         <th>Room ID</th>
                         <th>Hotel Name</th>
+                        <th>Room Name</th>
                         <th>Room Type</th>
                         <th>Price ($)</th>
                         <th>Status</th>
@@ -251,6 +254,7 @@ while ($row = $result->fetch_assoc()) {
                     <tr>
                         <td><?= htmlspecialchars($row['rId']) ?></td>
                         <td><?= htmlspecialchars($row['htName']) ?></td>
+                        <td><?= htmlspecialchars($row['rName']) ?></td>
                         <td><?= htmlspecialchars($row['rType']) ?></td>
                         <td><?= htmlspecialchars($row['rPrice']) ?></td>
                         <td><span class="badge bg-danger"><?= htmlspecialchars(ucfirst($row['rStatus'])) ?></span></td>
@@ -292,6 +296,12 @@ while ($row = $result->fetch_assoc()) {
                                 <?php } ?>
                             </select>
                             <div id="addHotelPreview" class="hotel-preview"></div>
+                        </div>
+                        <div class="mb-4">
+                            <label for="addRoomName" class="form-label">
+                                <i class="bi bi-tag me-2"></i>Room Name
+                            </label>
+                            <input type="text" class="form-control" id="addRoomName" name="rName" required>
                         </div>
                         <div class="mb-4">
                             <label for="addRoomType" class="form-label">
@@ -354,6 +364,12 @@ while ($row = $result->fetch_assoc()) {
                                 <?php } ?>
                             </select>
                             <div id="editHotelPreview" class="hotel-preview"></div>
+                        </div>
+                        <div class="mb-4">
+                            <label for="editRoomName" class="form-label">
+                                <i class="bi bi-tag me-2"></i>Room Name
+                            </label>
+                            <input type="text" class="form-control" id="editRoomName" name="rName" required>
                         </div>
                         <div class="mb-4">
                             <label for="editRoomType" class="form-label">
@@ -463,6 +479,7 @@ while ($row = $result->fetch_assoc()) {
                 if (data.success !== false) {
                     $('#editRoomId').val(data.rId);
                     $('#editHotelId').val(data.htId);
+                    $('#editRoomName').val(data.rName);
                     $('#editRoomType').val(data.rType);
                     $('#editPrice').val(data.rPrice);
                     $('#editStatus').val(data.rStatus);

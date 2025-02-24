@@ -22,6 +22,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
+    // Check if room has any active bookings before deleting
+    $checkBookings = $conn->prepare("SELECT COUNT(*) as count FROM tbBookings WHERE rId = ? AND bCheckout > NOW()");
+    $checkBookings->bind_param("i", $rId);
+    $checkBookings->execute();
+    $result = $checkBookings->get_result();
+    $bookingCount = $result->fetch_assoc()['count'];
+    $checkBookings->close();
+
+    if ($bookingCount > 0) {
+        $response = ['success' => false, 'message' => 'Cannot delete room with active bookings'];
+        header('Content-Type: application/json');
+        echo json_encode($response);
+        exit;
+    }
+
     $stmt = $conn->prepare("DELETE FROM tbRooms WHERE rId = ?");
     if (!$stmt) {
         $response = ['success' => false, 'message' => 'Prepare failed: ' . $conn->error];

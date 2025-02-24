@@ -13,12 +13,13 @@ if (!$conn) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $rName = $_POST['rName'] ?? '';
     $rType = $_POST['rType'] ?? '';
     $rPrice = $_POST['rPrice'] ?? 0;
     $rStatus = $_POST['rStatus'] ?? '';
     $htId = $_POST['htId'] ?? 0;
 
-    if (empty($rType) || empty($rStatus) || empty($htId)) {
+    if (empty($rName) || empty($rType) || empty($rStatus) || empty($htId)) {
         $response = ['success' => false, 'message' => 'Missing required fields'];
         header('Content-Type: application/json');
         echo json_encode($response);
@@ -36,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    $stmt = $conn->prepare("INSERT INTO tbRooms (htId, rType, rPrice, rStatus) VALUES (?, ?, ?, ?)");
+    $stmt = $conn->prepare("INSERT INTO tbRooms (htId, rName, rType, rPrice, rStatus) VALUES (?, ?, ?, ?, ?)");
     if (!$stmt) {
         $response = ['success' => false, 'message' => 'Prepare failed: ' . $conn->error];
         header('Content-Type: application/json');
@@ -44,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    $stmt->bind_param("isds", $htId, $rType, $rPrice, $rStatus);
+    $stmt->bind_param("issds", $htId, $rName, $rType, $rPrice, $rStatus);
 
     $response = [];
     if ($stmt->execute()) {
