@@ -7,8 +7,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = trim($_POST['email']);
     $dob = $_POST['dob'];
     $phone = trim($_POST['phone']);
-    $password = $_POST['password'];
-    $confirm_password = $_POST['confirm_password'];
 
     // File upload handling
     $target_dir = "uploads/";
@@ -40,9 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $uploadOk = 0;
     }
 
-    if ($password !== $confirm_password) {
-        $error = "Passwords do not match.";
-    } elseif ($uploadOk == 0) {
+    if ($uploadOk == 0) {
         $error = $error ?? "Sorry, your file was not uploaded.";
     } else {
         $conn = db_connect();
@@ -55,10 +51,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $error = "Email already exists.";
         } else {
             if (move_uploaded_file($_FILES["image"]["tmp_name"], $target_file)) {
-                $hashed_password = password_hash($password, PASSWORD_DEFAULT);
                 $image_path = $target_file;
-                $insert_stmt = $conn->prepare("INSERT INTO users (name, email, dob, phone, image, password) VALUES (?, ?, ?, ?, ?, ?)");
-                $insert_stmt->bind_param("ssssss", $name, $email, $dob, $phone, $image_path, $hashed_password);
+                $insert_stmt = $conn->prepare("INSERT INTO users (name, email, dob, phone, image) VALUES (?, ?, ?, ?, ?)");
+                $insert_stmt->bind_param("sssss", $name, $email, $dob, $phone, $image_path);
 
                 if ($insert_stmt->execute()) {
                     $success = "Account created successfully. You can now login.";
@@ -87,7 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
     body {
-        background: linear-gradient(135deg, #184e68 0%, #57ca85 100%);
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
         min-height: 100vh;
         display: flex;
         align-items: center;
@@ -105,7 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     .signup-header {
-        background: linear-gradient(135deg, #184e68 0%, #57ca85 100%);
+        background: linear-gradient(135deg, #2a5298 0%, #1e3c72 100%);
         color: white;
         padding: 30px;
         text-align: center;
@@ -125,12 +120,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     .form-control:focus {
-        border-color: #57ca85;
-        box-shadow: 0 0 0 0.2rem rgba(87, 202, 133, 0.25);
+        border-color: #2a5298;
+        box-shadow: 0 0 0 0.2rem rgba(42, 82, 152, 0.25);
     }
 
     .btn-primary {
-        background: linear-gradient(135deg, #184e68 0%, #57ca85 100%);
+        background: linear-gradient(135deg, #2a5298 0%, #1e3c72 100%);
         border: none;
         border-radius: 30px;
         padding: 12px;
@@ -169,14 +164,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     .login-link a {
-        color: #184e68;
+        color: #2a5298;
         text-decoration: none;
         font-weight: bold;
     }
 
     .form-label {
         font-weight: 600;
-        color: #184e68;
+        color: #2a5298;
     }
 
     .profile-image-container {
@@ -185,7 +180,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         border-radius: 50%;
         overflow: hidden;
         margin: 0 auto 20px;
-        border: 4px solid #57ca85;
+        border: 4px solid #2a5298;
         position: relative;
         cursor: pointer;
         background-color: #f0f0f0;
@@ -220,7 +215,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     .profile-image-container .overlay i,
     .profile-image-container .default-icon {
-        color: #57ca85;
+        color: #2a5298;
         font-size: 40px;
     }
 
@@ -285,22 +280,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <span class="input-group-text"><i class="fas fa-phone"></i></span>
                         <input type="tel" class="form-control" id="phone" name="phone"
                             placeholder="Enter your phone number" required>
-                    </div>
-                </div>
-                <div class="mb-3">
-                    <label for="password" class="form-label">Password</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                        <input type="password" class="form-control" id="password" name="password"
-                            placeholder="Enter your password" required>
-                    </div>
-                </div>
-                <div class="mb-4">
-                    <label for="confirm_password" class="form-label">Confirm Password</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                        <input type="password" class="form-control" id="confirm_password" name="confirm_password"
-                            placeholder="Confirm your password" required>
                     </div>
                 </div>
                 <button type="submit" class="btn btn-primary w-100">Sign Up</button>

@@ -11,7 +11,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $error = "Too many failed attempts. Please try again later.";
     } else {
         $username = trim($_POST['username']);
-        $password = $_POST['password'];
 
         $conn = db_connect();
         $stmt = $conn->prepare("SELECT * FROM users WHERE username = ?");
@@ -21,25 +20,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         if ($result->num_rows === 1) {
             $user = $result->fetch_assoc();
-            if (password_verify($password, $user['password'])) {
-                $_SESSION['login_attempts'] = 0;
-                session_regenerate_id(true);
-                $_SESSION['username'] = $username;
-                $_SESSION['user_id'] = $user['id'];
+            $_SESSION['login_attempts'] = 0;
+            session_regenerate_id(true);
+            $_SESSION['username'] = $username;
+            $_SESSION['user_id'] = $user['id'];
 
-                echo '<script>
-                        setTimeout(function() {
-                            window.location.href = "dashboard.php";
-                        }, 1500);
-                      </script>';
-                exit();
-            } else {
-                $_SESSION['login_attempts']++;
-                $error = "Invalid username or password.";
-            }
+            echo '<script>
+                    setTimeout(function() {
+                        window.location.href = "dashboard.php";
+                    }, 1500);
+                  </script>';
+            exit();
         } else {
             $_SESSION['login_attempts']++;
-            $error = "Invalid username or password.";
+            $error = "Invalid username.";
         }
 
         $stmt->close();
@@ -126,17 +120,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         font-weight: bold;
     }
 
-    .forgot-password {
-        text-align: right;
-        margin-top: 10px;
-    }
-
-    .forgot-password a {
-        color: #2a5298;
-        text-decoration: none;
-        font-weight: bold;
-    }
-
     .signup-link {
         text-align: center;
         margin-top: 20px;
@@ -167,18 +150,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             required>
                     </div>
                 </div>
-                <div class="mb-4">
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                        <input type="password" class="form-control" id="password" name="password" placeholder="Password"
-                            required>
-                    </div>
-                </div>
                 <button type="submit" class="btn btn-primary w-100">Login</button>
             </form>
-            <div class="forgot-password">
-                <a href="forgot_password.php">Forgot Password?</a>
-            </div>
             <div class="signup-link">
                 Don't have an account? <a href="signup.php">Sign Up</a>
             </div>
