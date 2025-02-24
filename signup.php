@@ -4,17 +4,22 @@ require_once 'core_config/db.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $name = trim($_POST['name']);
-    $email = trim($_POST['email']);
+    $email = trim($_POST['email']); 
     $dob = $_POST['dob'];
     $phone = trim($_POST['phone']);
 
     // File upload handling
     $target_dir = "uploads/";
-    $target_file = $target_dir . basename($_FILES["image"]["name"]);
     $uploadOk = 1;
-    $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+    $imageFileType = strtolower(pathinfo($_FILES["image"]["name"], PATHINFO_EXTENSION));
 
-    // Check if image file is a actual image or fake image
+    // Generate unique filename using timestamp and random string
+    $timestamp = time();
+    $random_string = bin2hex(random_bytes(8));
+    $new_filename = $timestamp . '_' . $random_string . '.' . $imageFileType;
+    $target_file = $target_dir . $new_filename;
+
+    // Check if image file is actual image or fake image
     $check = getimagesize($_FILES["image"]["tmp_name"]);
     if ($check !== false) {
         $uploadOk = 1;
@@ -42,30 +47,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $error = $error ?? "Sorry, your file was not uploaded.";
     } else {
         $conn = db_connect();
-        $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
-        $stmt->bind_param("s", $email);
-        $stmt->execute();
-        $result = $stmt->get_result();
+        
+        if (move_uploaded_file($_FILES["image"]["tmp_name"], $target_file)) {
+            $image_path = $target_file;
+            
+            // Use prepared statement to insert into tbGuests table
+            $insert_stmt = $conn->prepare("INSERT INTO tbGuests (gName, gMail, gDob, gPhone, gImage) VALUES (?, ?, ?, ?, ?)");
+            $insert_stmt->bind_param("sssss", $name, $email, $dob, $phone, $image_path);
 
-        if ($result->num_rows > 0) {
-            $error = "Email already exists.";
-        } else {
-            if (move_uploaded_file($_FILES["image"]["tmp_name"], $target_file)) {
-                $image_path = $target_file;
-                $insert_stmt = $conn->prepare("INSERT INTO users (name, email, dob, phone, image) VALUES (?, ?, ?, ?, ?)");
-                $insert_stmt->bind_param("sssss", $name, $email, $dob, $phone, $image_path);
-
-                if ($insert_stmt->execute()) {
-                    $success = "Account created successfully. You can now login.";
-                } else {
-                    $error = "Error creating account. Please try again.";
-                }
-                $insert_stmt->close();
+            if ($insert_stmt->execute()) {
+                $response = array('success' => true);
+                echo json_encode($response);
+                exit();
             } else {
-                $error = "Sorry, there was an error uploading your file.";
+                $error = "Error creating account. Please try again.";
             }
+            $insert_stmt->close();
+        } else {
+            $error = "Sorry, there was an error uploading your file.";
         }
-        $stmt->close();
+        
         db_close($conn);
     }
 }
@@ -241,7 +242,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <?php if (!empty($success)): ?>
             <div class="success-message"><?php echo htmlspecialchars($success); ?></div>
             <?php endif; ?>
-            <form action="signup.php" method="post" enctype="multipart/form-data">
+            <form action="add_guest.php" method="post" enctype="multipart/form-data">
                 <div class="profile-image-container" onclick="document.getElementById('image').click();">
                     <img id="preview" src="/placeholder.svg" alt="Profile Image" style="display: none;">
                     <i class="fas fa-user default-icon"></i>
@@ -249,21 +250,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <i class="fas fa-camera"></i>
                     </div>
                 </div>
-                <input type="file" id="image" name="image" accept="image/*" required onchange="previewImage(event)">
+                <input type="file" id="image" name="gImage" accept="image/*" required onchange="previewImage(event)">
 
                 <div class="mb-3">
                     <label for="name" class="form-label">Full Name</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="fas fa-user"></i></span>
-                        <input type="text" class="form-control" id="name" name="name" placeholder="Enter your full name"
-                            required>
+                        <input type="text" class="form-control" id="name" name="gName"
+                            placeholder="Enter your full name" required>
                     </div>
                 </div>
                 <div class="mb-3">
                     <label for="email" class="form-label">Email</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="fas fa-envelope"></i></span>
-                        <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email"
+                        <input type="email" class="form-control" id="email" name="gMail" placeholder="Enter your email"
                             required>
                     </div>
                 </div>
@@ -271,14 +272,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <label for="dob" class="form-label">Date of Birth</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="fas fa-calendar"></i></span>
-                        <input type="date" class="form-control" id="dob" name="dob" required>
+                        <input type="date" class="form-control" id="dob" name="gDob" required>
                     </div>
                 </div>
                 <div class="mb-3">
                     <label for="phone" class="form-label">Phone Number</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="fas fa-phone"></i></span>
-                        <input type="tel" class="form-control" id="phone" name="phone"
+                        <input type="tel" class="form-control" id="phone" name="gPhone"
                             placeholder="Enter your phone number" required>
                     </div>
                 </div>
@@ -311,9 +312,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             signupButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing up...';
             signupButton.disabled = true;
 
-            setTimeout(() => {
-                signupForm.submit();
-            }, 1500);
+            const formData = new FormData(this);
+
+            fetch('add_guest.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.href = 'login.php';
+                    } else {
+                        signupButton.innerHTML = 'Sign Up';
+                        signupButton.disabled = false;
+                        alert('Signup failed. Please try again.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    signupButton.innerHTML = 'Sign Up';
+                    signupButton.disabled = false;
+                    alert('An error occurred. Please try again.');
+                });
         });
     });
     </script>

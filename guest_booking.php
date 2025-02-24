@@ -2,8 +2,8 @@
 session_start();
 require_once 'core_config/db.php';
 
-// Check if user is logged in
-if (!isset($_SESSION['user_id'])) {
+// Check if user is logged in and is a guest
+if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'guest') {
     header('Location: login.php');
     exit;
 }
@@ -269,7 +269,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['api'])) {
             var formData = new FormData(this);
 
             $.ajax({
-                url: window.location.href,
+                url: 'add_booking.php',
                 type: 'POST',
                 data: Object.fromEntries(formData),
                 success: function(response) {
