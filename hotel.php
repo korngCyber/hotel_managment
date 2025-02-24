@@ -1,112 +1,244 @@
 <?php
 require_once 'core_config/db.php';
-
 $conn = db_connect();
 
-// Fetch all hotels from the database
-$query = "SELECT * FROM Hotels";
-$result = $conn->query($query);
+if (!$conn) {
+    die('Database connection failed: ' . $conn->connect_error);
+}
 
-// Check for database errors
+$query = "SELECT htId, htName, htAddr, htCon FROM tbHotels";
+$result = $conn->query($query);
 if (!$result) {
-    die("Database query failed: " . $conn->error);
+    die('Database query failed: ' . $conn->error);
 }
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Hotels</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+    :root {
+        --primary-color: #4a90e2;
+        --secondary-color: #f5f7fa;
+        --accent-color: #ff6b6b;
+        --text-color: #333;
+        --border-radius: 8px;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: var(--secondary-color);
+        color: var(--text-color);
+    }
+
+    .container {
+        background-color: #ffffff;
+        border-radius: var(--border-radius);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+        margin-top: 2rem;
+    }
+
+    h1 {
+        color: var(--primary-color);
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+    }
+
+    .btn-primary {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: darken(var(--primary-color), 10%);
+        border-color: darken(var(--primary-color), 10%);
+    }
+
+    .table {
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .table thead th {
+        background-color: var(--primary-color);
+        color: #ffffff;
+        border: none;
+    }
+
+    .table-striped tbody tr:nth-of-type(odd) {
+        background-color: rgba(0, 0, 0, 0.02);
+    }
+
+    .btn-sm {
+        border-radius: 20px;
+        padding: 0.25rem 0.75rem;
+    }
+
+    .btn-outline-primary {
+        color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+
+    .btn-outline-danger {
+        color: var(--accent-color);
+        border-color: var(--accent-color);
+    }
+
+    .modal-content {
+        border-radius: var(--border-radius);
+    }
+
+    .modal-header {
+        background: linear-gradient(135deg, #6e8efb, #a777e3);
+        color: #ffffff;
+        border-radius: var(--border-radius) var(--border-radius) 0 0;
+        padding: 20px;
+    }
+
+    .modal-title {
+        font-weight: 600;
+        letter-spacing: 1px;
+    }
+
+    .modal-body {
+        padding: 30px;
+    }
+
+    .form-label {
+        font-weight: 500;
+        margin-bottom: 8px;
+    }
+
+    .form-control {
+        border-radius: 8px;
+        padding: 12px;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        box-shadow: 0 0 0 3px rgba(110, 142, 251, 0.1);
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #6e8efb, #a777e3);
+        border: none;
+        border-radius: 8px;
+        padding: 12px;
+        font-weight: 600;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(110, 142, 251, 0.4);
+    }
+    </style>
 </head>
+
 <body>
-    <div class="container mt-4">
-        <h1 class="mb-3">Manage Hotels</h1>
-        <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addHotelModal">Add New Hotel</button>
-        
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Address</th>
-                    <th>Contact</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php while ($row = $result->fetch_assoc()) { ?>
+    <div class="container">
+        <h1 class="text-center">Manage Hotels</h1>
+        <button class="btn btn-primary mb-4" data-bs-toggle="modal" data-bs-target="#addHotelModal">
+            <i class="bi bi-plus-circle me-2"></i>Add New Hotel
+        </button>
+
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead>
                     <tr>
-                        <td><?= htmlspecialchars($row['HotelID']) ?></td>
-                        <td><?= htmlspecialchars($row['Name']) ?></td>
-                        <td><?= htmlspecialchars($row['Address']) ?></td>
-                        <td><?= htmlspecialchars($row['Contact']) ?></td>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Address</th>
+                        <th>Contact</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php while ($row = $result->fetch_assoc()) { ?>
+                    <tr>
+                        <td><?= htmlspecialchars($row['htId']) ?></td>
+                        <td><?= htmlspecialchars($row['htName']) ?></td>
+                        <td><?= htmlspecialchars($row['htAddr']) ?></td>
+                        <td><?= htmlspecialchars($row['htCon']) ?></td>
                         <td>
-                            <button class="btn btn-sm btn-outline-primary edit-hotel" data-id="<?= $row['HotelID'] ?>">Edit</button>
-                            <button class="btn btn-sm btn-outline-danger delete-hotel" data-id="<?= $row['HotelID'] ?>">Delete</button>
+                            <button class="btn btn-sm btn-outline-primary edit-hotel me-2"
+                                data-id="<?= $row['htId'] ?>">
+                                <i class="bi bi-pencil"></i> Edit
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger delete-hotel" data-id="<?= $row['htId'] ?>">
+                                <i class="bi bi-trash"></i> Delete
+                            </button>
                         </td>
                     </tr>
-                <?php } ?>
-            </tbody>
-        </table>
+                    <?php } ?>
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    <!-- Modal for Adding Hotel -->
-    <div class="modal fade" id="addHotelModal" tabindex="-1" aria-labelledby="addHotelModalLabel" aria-hidden="true">
+    <!-- Add Hotel Modal -->
+    <div class="modal fade" id="addHotelModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Add New Hotel</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <form id="addHotelForm">
                         <div class="mb-3">
-                            <label for="addHotelName" class="form-label">Name</label>
-                            <input type="text" class="form-control" id="addHotelName" required>
+                            <label for="addName" class="form-label">Hotel Name</label>
+                            <input type="text" class="form-control" id="addName" name="htName" required>
                         </div>
                         <div class="mb-3">
-                            <label for="addHotelAddress" class="form-label">Address</label>
-                            <textarea class="form-control" id="addHotelAddress" required></textarea>
+                            <label for="addAddress" class="form-label">Address</label>
+                            <textarea class="form-control" id="addAddress" name="htAddr" rows="3"></textarea>
                         </div>
                         <div class="mb-3">
-                            <label for="addHotelContact" class="form-label">Contact</label>
-                            <input type="text" class="form-control" id="addHotelContact" required>
+                            <label for="addContact" class="form-label">Contact</label>
+                            <input type="text" class="form-control" id="addContact" name="htCon">
                         </div>
-                        <button type="submit" class="btn btn-primary">Add Hotel</button>
+                        <button type="submit" class="btn btn-primary w-100">Add Hotel</button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Modal for Editing Hotel -->
-    <div class="modal fade" id="editHotelModal" tabindex="-1" aria-labelledby="editHotelModalLabel" aria-hidden="true">
+    <!-- Edit Hotel Modal -->
+    <div class="modal fade" id="editHotelModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Edit Hotel</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <form id="editHotelForm">
-                        <input type="hidden" id="editHotelID">
+                        <input type="hidden" id="editHotelId" name="htId">
                         <div class="mb-3">
-                            <label for="editHotelName" class="form-label">Name</label>
-                            <input type="text" class="form-control" id="editHotelName" required>
+                            <label for="editName" class="form-label">Hotel Name</label>
+                            <input type="text" class="form-control" id="editName" name="htName" required>
                         </div>
                         <div class="mb-3">
-                            <label for="editHotelAddress" class="form-label">Address</label>
-                            <textarea class="form-control" id="editHotelAddress" required></textarea>
+                            <label for="editAddress" class="form-label">Address</label>
+                            <textarea class="form-control" id="editAddress" name="htAddr" rows="3"></textarea>
                         </div>
                         <div class="mb-3">
-                            <label for="editHotelContact" class="form-label">Contact</label>
-                            <input type="text" class="form-control" id="editHotelContact" required>
+                            <label for="editContact" class="form-label">Contact</label>
+                            <input type="text" class="form-control" id="editContact" name="htCon">
                         </div>
-                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                        <button type="submit" class="btn btn-primary w-100">Save Changes</button>
                     </form>
                 </div>
             </div>
@@ -115,114 +247,115 @@ if (!$result) {
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-    $(document).ready(function () {
-        // Restore scroll position
-        if (localStorage.getItem('scrollPosition')) {
-            window.scrollTo(0, localStorage.getItem('scrollPosition'));
-        }
-
+    $(document).ready(function() {
         // Add Hotel
-        $('#addHotelForm').submit(function (e) {
+        $('#addHotelForm').submit(function(e) {
             e.preventDefault();
-            var name = $('#addHotelName').val();
-            var address = $('#addHotelAddress').val();
-            var contact = $('#addHotelContact').val();
-            
+            var formData = new FormData(this);
+
             $.ajax({
                 url: 'add_hotel.php',
                 type: 'POST',
-                data: { name: name, address: address, contact: contact },
-                success: function (response) {
-                    if (response.success) {
-                        alert('Success: Hotel added successfully');
-                        localStorage.setItem('scrollPosition', window.scrollY); // Save scroll position
-                        location.reload();
-                    } else {
-                        alert('Failed: ' + (response.message || 'An unknown error occurred.'));
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    try {
+                        var res = typeof response === 'string' ? JSON.parse(response) :
+                            response;
+                        if (res.success) {
+                            alert('Hotel added successfully');
+                            location.reload();
+                        } else {
+                            alert('Failed to add hotel: ' + res.message);
+                        }
+                    } catch (e) {
+                        console.error('Error parsing response:', e, response);
+                        alert('Unexpected error. Check server response.');
                     }
                 },
-                error: function () {
-                    alert('Failed: Unable to add hotel. Please try again.');
+                error: function(xhr, status, error) {
+                    console.error('AJAX error:', xhr.responseText);
+                    alert('Failed to add hotel. Check the server logs.');
                 }
             });
         });
 
         // Edit Hotel
-        $('.edit-hotel').click(function () {
-            var hotelID = $(this).data('id');
-            $.ajax({
-                url: 'get_hotel.php',
-                type: 'GET',
-                data: { id: hotelID },
-                dataType: 'json',
-                success: function (data) {
-                    $('#editHotelID').val(data.HotelID);
-                    $('#editHotelName').val(data.Name);
-                    $('#editHotelAddress').val(data.Address);
-                    $('#editHotelContact').val(data.Contact);
+        $('.edit-hotel').click(function() {
+            var hotelId = $(this).data('id');
+            $.get('get_hotel.php', {
+                id: hotelId
+            }, function(data) {
+                if (data.success !== false) {
+                    $('#editHotelId').val(data.htId);
+                    $('#editName').val(data.htName);
+                    $('#editAddress').val(data.htAddr);
+                    $('#editContact').val(data.htCon);
                     $('#editHotelModal').modal('show');
-                },
-                error: function () {
-                    alert('Failed: Unable to fetch hotel details.');
+                } else {
+                    alert(data.message);
                 }
+            }).fail(function(xhr, status, error) {
+                console.error('AJAX error:', status, error);
+                alert('Failed to fetch hotel data. Please try again.');
             });
         });
 
-        $('#editHotelForm').submit(function (e) {
+        // Update Hotel
+        $('#editHotelForm').submit(function(e) {
             e.preventDefault();
-            var hotelID = $('#editHotelID').val();
-            var name = $('#editHotelName').val();
-            var address = $('#editHotelAddress').val();
-            var contact = $('#editHotelContact').val();
-            
+            var formData = new FormData(this);
+
             $.ajax({
                 url: 'update_hotel.php',
                 type: 'POST',
-                data: { id: hotelID, name: name, address: address, contact: contact },
-                success: function (response) {
-                    if (response.success) {
-                        alert('Success: Hotel updated successfully');
-                        localStorage.setItem('scrollPosition', window.scrollY); // Save scroll position
-                        location.reload();
-                    } else {
-                        alert('Failed: ' + (response.message || 'An unknown error occurred.'));
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    try {
+                        var res = typeof response === 'string' ? JSON.parse(response) :
+                            response;
+                        if (res.success) {
+                            alert('Hotel updated successfully');
+                            location.reload();
+                        } else {
+                            alert('Failed to update hotel: ' + res.message);
+                        }
+                    } catch (e) {
+                        console.error('Error parsing response:', e);
+                        alert('Unexpected error. Please check the server response.');
                     }
                 },
-                error: function () {
-                    alert('Failed: Unable to update hotel. Please try again.');
+                error: function(xhr, status, error) {
+                    console.error('AJAX error:', xhr.responseText);
+                    alert('Failed to update hotel. Please try again.');
                 }
             });
         });
 
         // Delete Hotel
-        $('.delete-hotel').click(function () {
-            var hotelID = $(this).data('id');
-            if (confirm('Are you sure you want to delete this hotel?')) {
-                $.ajax({
-                    url: 'delete_hotel.php',
-                    type: 'POST',
-                    data: { id: hotelID },
-                    success: function (response) {
-                        if (response.success) {
-                            alert('Success: Hotel deleted successfully');
-                            localStorage.setItem('scrollPosition', window.scrollY); // Save scroll position
-                            location.reload();
-                        } else {
-                            alert('Failed: ' + (response.message || 'An unknown error occurred.'));
-                        }
-                    },
-                    error: function () {
-                        alert('Failed: Unable to delete hotel. Please try again.');
+        $('.delete-hotel').click(function() {
+            var hotelId = $(this).data('id');
+            if (confirm('Are you sure you want to delete this hotel? This action cannot be undone.')) {
+                $.post('delete_hotel.php', {
+                    id: hotelId
+                }, function(data) {
+                    if (data.success) {
+                        alert('Hotel deleted successfully');
+                        location.reload();
+                    } else {
+                        alert('Failed to delete hotel: ' + data.message);
                     }
+                }).fail(function(xhr, status, error) {
+                    console.error('AJAX error:', xhr.responseText);
+                    alert('Failed to delete hotel. Please try again.');
                 });
             }
-        });
-
-        // Save scroll position before unload
-        $(window).on('beforeunload', function () {
-            localStorage.setItem('scrollPosition', window.scrollY);
         });
     });
     </script>
 </body>
+
 </html>

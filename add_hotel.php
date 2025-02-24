@@ -1,27 +1,37 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 require_once 'core_config/db.php';
+
+header('Content-Type: application/json');
+
 $conn = db_connect();
-
-$name = $_POST['name'];
-$address = $_POST['address'];
-$contact = $_POST['contact'];
-
-$query = "INSERT INTO Hotels (Name, Address, Contact) VALUES (?, ?, ?)";
-$stmt = $conn->prepare($query);
-$stmt->bind_param("sss", $name, $address, $contact);
-
-$response = []; // Initialize response array
-
-if ($stmt->execute()) {
-    $response['success'] = true;
-} else {
-    $response['success'] = false;
-    $response['message'] = $stmt->error; // Capture the error message
+if (!$conn) {
+    echo json_encode(['success' => false, 'message' => 'Database connection failed: ' . mysqli_connect_error()]);
+    exit;
 }
 
-$stmt->close();
-$conn->close();
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    if (isset($_POST['htName'])) {
+        $name = $_POST['htName'];
+        $address = $_POST['htAddr'] ?? '';
+        $contact = $_POST['htCon'] ?? '';
 
-header('Content-Type: application/json'); // Set the content type to JSON
-echo json_encode($response); // Return the response as JSON
-?>
+        $stmt = $conn->prepare("INSERT INTO tbHotels (htName, htAddr, htCon) VALUES (?, ?, ?)");
+        $stmt->bind_param("sss", $name, $address, $contact);
+
+        if ($stmt->execute()) {
+            echo json_encode(['success' => true]);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Database insertion failed: ' . $stmt->error]);
+        }
+
+        $stmt->close();
+    } else {
+        echo json_encode(['success' => false, 'message' => 'Missing required fields.']);
+    }
+} else {
+    echo json_encode(['success' => false, 'message' => 'Invalid request method.']);
+}
+
+$conn->close();

@@ -1,28 +1,42 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 require_once 'core_config/db.php';
+
+header('Content-Type: application/json');
+
 $conn = db_connect();
-
-$id = $_POST['id'];
-$name = $_POST['name'];
-$address = $_POST['address'];
-$contact = $_POST['contact'];
-
-$query = "UPDATE Hotels SET Name = ?, Address = ?, Contact = ? WHERE HotelID = ?";
-$stmt = $conn->prepare($query);
-$stmt->bind_param("sssi", $name, $address, $contact, $id);
-
-$response = []; // Initialize response array
-
-if ($stmt->execute()) {
-    $response['success'] = true;
-} else {
-    $response['success'] = false;
-    $response['message'] = $stmt->error; // Capture the error message
+if (!$conn) {
+    echo json_encode(['success' => false, 'message' => 'Database connection failed: ' . mysqli_connect_error()]);
+    exit;
 }
 
-$stmt->close();
-$conn->close();
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    // Validate required fields
+    if (!isset($_POST['htId']) || !isset($_POST['htName'])) {
+        echo json_encode(["success" => false, "message" => "Missing required fields"]);
+        exit;
+    }
 
-header('Content-Type: application/json'); // Set the content type to JSON
-echo json_encode($response); // Return the response as JSON
+    $hotelId = $_POST['htId'];
+    $name = $_POST['htName'];
+    $address = $_POST['htAddr'] ?? '';
+    $contact = $_POST['htCon'] ?? '';
+
+    // Update hotel information
+    $query = "UPDATE tbHotels SET htName = ?, htAddr = ?, htCon = ? WHERE htId = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("sssi", $name, $address, $contact, $hotelId);
+
+    if ($stmt->execute()) {
+        echo json_encode(["success" => true]);
+    } else {
+        echo json_encode(["success" => false, "message" => "Error: " . $stmt->error]);
+    }
+    $stmt->close();
+} else {
+    echo json_encode(["success" => false, "message" => "Invalid request method"]);
+}
+
+$conn->close();
 ?>

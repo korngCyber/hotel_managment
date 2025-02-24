@@ -1,26 +1,36 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 require_once 'core_config/db.php';
+
+header('Content-Type: application/json');
+
 $conn = db_connect();
-
-$id = $_GET['id'];
-
-$query = "SELECT * FROM Hotels WHERE HotelID = ?";
-$stmt = $conn->prepare($query);
-$stmt->bind_param("i", $id);
-$stmt->execute();
-$result = $stmt->get_result();
-
-$response = []; // Initialize response array
-
-if ($row = $result->fetch_assoc()) {
-    $response = $row; // Return the hotel data
-} else {
-    $response['error'] = 'Hotel not found'; // Capture the error message
+if (!$conn) {
+    echo json_encode(['success' => false, 'message' => 'Database connection failed: ' . mysqli_connect_error()]);
+    exit;
 }
 
-$stmt->close();
-$conn->close();
+if (isset($_GET['id'])) {
+    $id = $_GET['id'];
+    
+    $query = "SELECT htId, htName, htAddr, htCon FROM tbHotels WHERE htId = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-header('Content-Type: application/json'); // Set the content type to JSON
-echo json_encode($response); // Return the response as JSON
+    if ($result->num_rows > 0) {
+        $response = $result->fetch_assoc();
+    } else {
+        $response = ['success' => false, 'message' => 'Hotel not found'];
+    }
+
+    $stmt->close();
+} else {
+    $response = ['success' => false, 'message' => 'Missing ID parameter'];
+}
+
+$conn->close();
+echo json_encode($response);
 ?>
