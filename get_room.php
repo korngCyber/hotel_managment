@@ -1,41 +1,37 @@
 <?php
-    require_once 'core_config/db.php';
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
-    $response = ['success' => false]; // Initialize response array
+require_once 'core_config/db.php';
 
-    if (isset($_GET['id'])) {
-        $roomID = $_GET['id'];
-        $conn = db_connect();
+header('Content-Type: application/json');
 
-        if (!$conn) {
-            $response['message'] = 'Database connection failed';
-        } else {
-            $stmt = $conn->prepare("SELECT * FROM Rooms WHERE RoomID = ?");
-            if ($stmt) {
-                $stmt->bind_param("i", $roomID);
-                $stmt->execute();
-                $result = $stmt->get_result();
-                $room = $result->fetch_assoc();
+$conn = db_connect();
+if (!$conn) {
+    echo json_encode(['success' => false, 'message' => 'Database connection failed: ' . mysqli_connect_error()]);
+    exit;
+}
 
-                if ($room) {
-                    $response['success'] = true;
-                    $response['data'] = $room; // Include room data in response
-                } else {
-                    $response['message'] = 'Room not found';
-                }
+if (isset($_GET['id'])) {
+    $id = $_GET['id'];
 
-                $stmt->close();
-            } else {
-                $response['message'] = 'Prepare failed: ' . $conn->error;
-            }
-        }
+    $query = "SELECT rId, htId, rType, rPrice, rStatus FROM tbRooms WHERE rId = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-        $conn->close();
+    if ($result->num_rows > 0) {
+        $response = $result->fetch_assoc();
     } else {
-        $response['message'] = 'Missing room ID';
+        $response = ['success' => false, 'message' => 'Room not found'];
     }
 
-    header('Content-Type: application/json'); // Set the content type to JSON
-    echo json_encode($response); // Return the response as JSON
+    $stmt->close();
+} else {
+    $response = ['success' => false, 'message' => 'Missing ID parameter'];
+}
 
+$conn->close();
+echo json_encode($response);
 ?>

@@ -13,19 +13,31 @@ if (!$conn) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $roomID = $_POST['id'] ?? 0;
-    $roomType = $_POST['roomType'] ?? '';
-    $price = $_POST['price'] ?? 0;
-    $status = $_POST['status'] ?? '';
+    $rId = $_POST['rId'] ?? 0;
+    $rType = $_POST['rType'] ?? '';
+    $rPrice = $_POST['rPrice'] ?? 0;
+    $rStatus = $_POST['rStatus'] ?? '';
+    $htId = $_POST['htId'] ?? 0;
 
-    if (empty($roomType) || empty($status) || empty($roomID)) {
+    if (empty($rType) || empty($rStatus) || empty($rId) || empty($htId)) {
         $response = ['success' => false, 'message' => 'Missing required fields'];
         header('Content-Type: application/json');
         echo json_encode($response);
         exit;
     }
 
-    $stmt = $conn->prepare("UPDATE Rooms SET RoomType = ?, Price = ?, Status = ? WHERE RoomID = ?");
+    // Validate enum values
+    $validTypes = ['Single', 'Double', 'Suite'];
+    $validStatuses = ['available', 'booked'];
+
+    if (!in_array($rType, $validTypes) || !in_array($rStatus, $validStatuses)) {
+        $response = ['success' => false, 'message' => 'Invalid room type or status'];
+        header('Content-Type: application/json');
+        echo json_encode($response);
+        exit;
+    }
+
+    $stmt = $conn->prepare("UPDATE tbRooms SET htId = ?, rType = ?, rPrice = ?, rStatus = ? WHERE rId = ?");
     if (!$stmt) {
         $response = ['success' => false, 'message' => 'Prepare failed: ' . $conn->error];
         header('Content-Type: application/json');
@@ -33,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    $stmt->bind_param("sssi", $roomType, $price, $status, $roomID);
+    $stmt->bind_param("isdsi", $htId, $rType, $rPrice, $rStatus, $rId);
 
     $response = [];
     if ($stmt->execute()) {

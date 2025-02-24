@@ -13,19 +13,30 @@ if (!$conn) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $roomType = $_POST['roomType'] ?? '';
-    $price = $_POST['price'] ?? 0;
-    $status = $_POST['status'] ?? '';
-    $hotelId = $_POST['hotelId'] ?? 0;
+    $rType = $_POST['rType'] ?? '';
+    $rPrice = $_POST['rPrice'] ?? 0;
+    $rStatus = $_POST['rStatus'] ?? '';
+    $htId = $_POST['htId'] ?? 0;
 
-    if (empty($roomType) || empty($status) || empty($hotelId)) {
+    if (empty($rType) || empty($rStatus) || empty($htId)) {
         $response = ['success' => false, 'message' => 'Missing required fields'];
         header('Content-Type: application/json');
         echo json_encode($response);
         exit;
     }
 
-    $stmt = $conn->prepare("INSERT INTO Rooms (RoomType, Price, Status, HotelID) VALUES (?, ?, ?, ?)");
+    // Validate enum values
+    $validTypes = ['Single', 'Double', 'Suite'];
+    $validStatuses = ['available', 'booked'];
+
+    if (!in_array($rType, $validTypes) || !in_array($rStatus, $validStatuses)) {
+        $response = ['success' => false, 'message' => 'Invalid room type or status'];
+        header('Content-Type: application/json');
+        echo json_encode($response);
+        exit;
+    }
+
+    $stmt = $conn->prepare("INSERT INTO tbRooms (htId, rType, rPrice, rStatus) VALUES (?, ?, ?, ?)");
     if (!$stmt) {
         $response = ['success' => false, 'message' => 'Prepare failed: ' . $conn->error];
         header('Content-Type: application/json');
@@ -33,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    $stmt->bind_param("sdsi", $roomType, $price, $status, $hotelId);
+    $stmt->bind_param("isds", $htId, $rType, $rPrice, $rStatus);
 
     $response = [];
     if ($stmt->execute()) {

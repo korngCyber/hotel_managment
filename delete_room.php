@@ -1,32 +1,50 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 require_once 'core_config/db.php';
+$conn = db_connect();
 
-$response = ['success' => false]; // Initialize response array
-
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $conn = db_connect();
-    $roomID = $_POST['id'] ?? 0; // Use null coalescing operator for safety
-
-    if ($roomID > 0) { // Check if roomID is valid
-        $stmt = $conn->prepare("DELETE FROM Rooms WHERE RoomID = ?");
-        $stmt->bind_param("i", $roomID);
-
-        if ($stmt->execute()) {
-            $response['success'] = true;
-            $response['message'] = "Room deleted successfully.";
-        } else {
-            $response['message'] = "Error deleting room: " . $stmt->error;
-        }
-
-        $stmt->close();
-    } else {
-        $response['message'] = 'Invalid room ID.';
-    }
-
-    $conn->close();
+if (!$conn) {
+    $response = ['success' => false, 'message' => 'Database connection failed'];
+    header('Content-Type: application/json');
+    echo json_encode($response);
+    exit;
 }
 
-header('Content-Type: application/json'); // Set the content type to JSON
-echo json_encode($response); // Return the response as JSON
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $rId = $_POST['id'] ?? 0;
 
+    if (empty($rId)) {
+        $response = ['success' => false, 'message' => 'Missing required room ID'];
+        header('Content-Type: application/json');
+        echo json_encode($response);
+        exit;
+    }
+
+    $stmt = $conn->prepare("DELETE FROM tbRooms WHERE rId = ?");
+    if (!$stmt) {
+        $response = ['success' => false, 'message' => 'Prepare failed: ' . $conn->error];
+        header('Content-Type: application/json');
+        echo json_encode($response);
+        exit;
+    }
+
+    $stmt->bind_param("i", $rId);
+
+    $response = [];
+    if ($stmt->execute()) {
+        $response['success'] = true;
+        $response['message'] = "Room deleted successfully.";
+    } else {
+        $response['success'] = false;
+        $response['message'] = "Error deleting room: " . $stmt->error;
+    }
+
+    $stmt->close();
+    $conn->close();
+
+    header('Content-Type: application/json');
+    echo json_encode($response);
+}
 ?>
