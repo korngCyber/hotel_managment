@@ -5,6 +5,8 @@
 this is query for database 
 
 
+CREATE DATABASE hotel_managment;
+
 CREATE TABLE tbHotels (
     htId INT AUTO_INCREMENT PRIMARY KEY,
     htName VARCHAR(100) NOT NULL,
