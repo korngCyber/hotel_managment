@@ -43,7 +43,7 @@ CREATE TABLE tbStaffs (
     sImage VARCHAR(255),
     sWork BOOLEAN,
 );
-
+ 
 
 CREATE TABLE tbBookings (
     bId INT AUTO_INCREMENT PRIMARY KEY,
