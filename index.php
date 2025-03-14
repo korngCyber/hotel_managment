@@ -140,6 +140,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'staff') {
     <div class="sidebar">
         <h2 class="text-center"><i class="fas fa-hotel"></i> Hotel Management</h2>
         <a href="booking.php" class="tab-link" data-target="booking"><i class="fas fa-calendar-check"></i> Booking</a>
+        <a href="booking.php" class="tab-link" data-target="booking"><i class="fas fa-calendar-check"></i> Booking</a>
         <a href="room.php" class="tab-link" data-target="rooms"><i class="fas fa-bed"></i> Rooms</a>
         <a href="hotel.php" class="tab-link" data-target="hotels"><i class="fas fa-building"></i> Hotels</a>
         <a href="staff.php" class="tab-link" data-target="staffs"><i class="fas fa-users"></i> Staff</a>
@@ -151,6 +152,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'staff') {
     <!-- Content Area -->
     <div class="content">
         <div class="loader">Loading...</div>
+        <div id="booking" class="tab-content"></div>
         <div id="booking" class="tab-content"></div>
         <div id="rooms" class="tab-content" style="display: none;"></div>
         <div id="hotels" class="tab-content" style="display: none;"></div>
